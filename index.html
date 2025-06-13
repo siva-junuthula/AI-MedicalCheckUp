@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI-Health CheckUp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #2B6CB0; /* A slightly softer, more inviting blue */
+            --dark-blue: #1A365D; /* A deep, rich blue for contrasts */
+            --accent-green: #38A169; /* A vibrant, reassuring green */
+            --accent-red: #E53E3E; /* A clear, attention-grabbing red */
+            --light-bg: #F7FAFC; /* Very light background */
+            --gray-text: #4A5568; /* Darker gray for primary text */
+            --light-gray-border: #CBD5E0; /* Light gray for borders */
+            --hover-light: rgba(255, 255, 255, 0.15); /* Slightly more visible hover for dark backgrounds */
+            --shadow-light: rgba(0, 0, 0, 0.05);
+            --shadow-medium: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--gray-text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
+            box-shadow: 0 4px 20px var(--shadow-medium);
+            padding: 0.75rem 1rem;
+            transition: all 0.4s ease-in-out;
+        }
+
+        .navbar-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2rem; /* Slightly larger for impact */
+            color: white !important;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            color: rgba(255, 255, 255, 0.9) !important;
+            transform: scale(1.02);
+        }
+
+        .logo {
+            width: 45px; /* Slightly larger logo */
+            height: 45px;
+            margin-right: 12px;
+            transition: all 0.4s ease;
+        }
+
+        .logo:hover {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .nav-link {
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 600; /* More emphasis */
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.85) !important;
+            margin: 0 10px;
+            padding: 10px 15px !important;
+            border-radius: 6px;
+            transition: all 0.3s ease-in-out;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background-color: white;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: calc(100% - 20px);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background-color: var(--hover-light);
+            transform: translateY(-3px);
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin: 3rem 0 1.5rem; /* More vertical space */
+            text-align: center;
+            position: relative;
+            font-size: 2.8rem;
+        }
+
+        .main-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 5px;
+            background: var(--accent-green); /* Green underline */
+            margin: 15px auto 0;
+            border-radius: 3px;
+        }
+
+        .diagnosis-container {
+            background: white;
+            border-radius: 16px; /* Softer corners */
+            box-shadow: 0 10px 30px var(--shadow-light); /* More pronounced shadow */
+            padding: 3rem;
+            margin-bottom: 4rem;
+            border-top: 6px solid var(--primary-blue); /* Thicker, more prominent border */
+            transition: all 0.3s ease-in-out;
+        }
+
+        .diagnosis-container:hover {
+            box-shadow: 0 15px 40px var(--shadow-medium);
+        }
+
+        .form-control, .form-control:focus {
+            border: 1px solid var(--light-gray-border);
+            border-radius: 10px;
+            padding: 14px 18px; /* More padding */
+            box-shadow: none;
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.25rem rgba(43, 108, 176, 0.2); /* Softer focus shadow */
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border: none;
+            border-radius: 10px;
+            padding: 14px 28px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue);
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 6px 12px var(--shadow-light);
+        }
+
+        .btn-danger {
+            background-color: var(--accent-red);
+            border: none;
+            border-radius: 10px;
+            padding: 16px 30px; /* Larger button */
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-danger:hover {
+            background-color: #C53030; /* Darker red on hover */
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 6px 12px var(--shadow-light);
+        }
+
+        .btn-outline-light {
+            border-color: rgba(255, 255, 255, 0.6);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-light:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateY(-2px);
+            border-color: white;
+        }
+
+        #transcription {
+            margin-top: 15px;
+            padding: 18px; /* More padding */
+            background-color: #EBF8FF; /* Light blue background */
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-blue);
+            font-style: italic;
+            color: var(--primary-blue);
+            font-weight: 500;
+            min-height: 60px; /* Ensure some height even when empty */
+            display: flex;
+            align-items: center;
+        }
+
+        #transcription .alert {
+            margin-bottom: 0; /* Remove default margin from alert */
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .result-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Increased gap */
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px var(--shadow-light);
+        }
+
+        .toggle-button {
+            padding: 15px 25px; /* Larger buttons */
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 160px; /* Ensure consistent width */
+            text-align: center;
+        }
+
+        .toggle-button:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .toggle-button i {
+            margin-right: 10px; /* More space for icon */
+            font-size: 1.2rem;
+        }
+
+        /* Specific button colors */
+        .toggle-button[data-bs-target="#diseaseModal"] { background-color: var(--accent-red); }
+        .toggle-button[data-bs-target="#diseaseModal"]:hover { background-color: #C53030; }
+
+        .toggle-button[data-bs-target="#descriptionModal"] { background-color: var(--primary-blue); }
+        .toggle-button[data-bs-target="#descriptionModal"]:hover { background-color: var(--dark-blue); }
+
+        .toggle-button[data-bs-target="#precautionModal"] { background-color: var(--accent-green); }
+        .toggle-button[data-bs-target="#precautionModal"]:hover { background-color: #2F855A; }
+
+        .toggle-button[data-bs-target="#medicationsModal"] { background-color: #805AD5; /* A pleasant purple */ }
+        .toggle-button[data-bs-target="#medicationsModal"]:hover { background-color: #6B46C1; }
+
+        .toggle-button[data-bs-target="#workoutsModal"] { background-color: #F6AD55; /* A warm orange */ }
+        .toggle-button[data-bs-target="#workoutsModal"]:hover { background-color: #ED8936; }
+
+        .toggle-button[data-bs-target="#dietsModal"] { background-color: #319795; /* Teal */ }
+        .toggle-button[data-bs-target="#dietsModal"]:hover { background-color: #2C7A7B; }
+
+        .modal-header {
+            background: linear-gradient(90deg, var(--dark-blue), var(--primary-blue));
+            color: white;
+            border-bottom: none;
+            padding: 1.5rem 2rem;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .modal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1); /* White close button */
+            transition: transform 0.2s ease;
+        }
+        .modal-header .btn-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            overflow: hidden; /* Ensures rounded corners apply to header/footer */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease-out; /* For modal animation */
+        }
+
+        .modal-body {
+            padding: 2rem;
+            color: var(--gray-text);
+        }
+
+        .modal-body ul {
+            padding-left: 25px;
+            list-style: none; /* Remove default bullet points */
+        }
+
+        .modal-body li {
+            margin-bottom: 12px;
+            padding-left: 0; /* Remove default padding for list items */
+            position: relative;
+            font-size: 1.05rem;
+        }
+
+        .modal-body .list-group-item {
+            border: none;
+            background-color: #F0F4F8; /* Light background for list items */
+            border-radius: 8px;
+            margin-bottom: 8px;
+            padding: 12px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .modal-body .list-group-item:hover {
+            background-color: #E2E8F0;
+            transform: translateX(5px);
+        }
+
+        .modal-body .list-group-item i {
+            font-size: 1.1rem;
+        }
+
+        .alert-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--dark-blue);
+        }
+
+        .alert-primary {
+            background-color: #EBF8FF;
+            border-color: #BEE3F8;
+            color: var(--dark-blue);
+        }
+
+        .alert-warning {
+            background-color: #FEFCBF;
+            border-color: #FEEBC8;
+            color: #7B341E;
+        }
+
+        .alert-info {
+            background-color: #E0F7FA;
+            border-color: #B2EBF2;
+            color: #00796B;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 500;
+        }
+
+        .alert-info strong {
+            color: #004D40;
+        }
+
+        footer {
+            background-color: var(--dark-blue);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 5rem; /* More space above footer */
+            font-size: 0.95rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin: 0 15px; /* More spacing */
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            text-decoration: underline;
+            transform: translateY(-3px);
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 1.8rem; /* Larger social icons */
+            margin: 0 12px;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: var(--accent-green); /* Green hover for social icons */
+            transform: translateY(-4px) scale(1.1);
+        }
+
+        hr.bg-light {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            height: 1px;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.7rem;
+            }
+            .logo {
+                width: 35px;
+                height: 35px;
+            }
+            .nav-link {
+                padding: 8px 10px !important;
+                font-size: 0.95rem;
+            }
+            .main-title {
+                font-size: 2.2rem;
+                margin-top: 2rem;
+            }
+            .main-title::after {
+                width: 70px;
+            }
+            .diagnosis-container {
+                padding: 2rem;
+                margin-bottom: 2rem;
+            }
+            .form-control {
+                padding: 10px 12px;
+                font-size: 1rem;
+            }
+            .btn-primary, .btn-danger {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+            .result-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+                padding: 1rem;
+            }
+            .toggle-button {
+                width: 100%;
+                font-size: 1rem;
+                padding: 12px 15px;
+            }
+            footer {
+                padding: 2rem 0;
+            }
+            .footer-links a {
+                margin: 0 8px;
+            }
+            .social-icons a {
+                font-size: 1.3rem;
+                margin: 0 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img class="logo" src="{{ url_for('static', filename='medll.png') }}" alt="HealthCheck Logo">
+                HealthCheck
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact"><i class="fas fa-envelope"></i> Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/developer"><i class="fas fa-code"></i> Developer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/blog"><i class="fas fa-blog"></i> Blog</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search symptoms..." aria-label="Search">
+                    <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <h1 class="main-title">Health CheckUp-AI</h1>
+        <p class="text-center text-muted mb-5 lead">Describe your symptoms and our advanced AI will help identify potential health conditions.</p>
+
+        <div class="diagnosis-container">
+            <form action="/predict" method="post">
+                <div class="form-group mb-4">
+                    <label for="symptoms" class="form-label fw-bold mb-3">Describe Your Symptoms</label>
+                    <input type="text" class="form-control" id="symptoms" name="symptoms"
+                           placeholder="e.g. headache, fever, nausea, dizziness...">
+                    <small class="text-muted mt-2 d-block">Separate multiple symptoms with commas</small>
+                </div>
+
+                <div class="d-flex flex-column flex-md-row align-items-md-center mb-4">
+                    <button type="button" id="startSpeechRecognition" class="btn btn-primary mb-3 mb-md-0 me-md-3">
+                        <i class="fas fa-microphone me-2"></i>Voice Input
+                    </button>
+                    <div id="transcription" class="flex-grow-1"></div>
+                </div>
+
+                {% if message %}
+                <div class="alert alert-warning mt-4">{{ message }}</div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-danger w-100 py-3 fw-bold mt-4">
+                    <i class="fas fa-diagnoses me-2"></i>Analyze Symptoms
+                </button>
+            </form>
+        </div>
+
+        {% if predicted_disease %}
+        <div class="results-section mt-5">
+            <h2 class="main-title">Diagnosis Results</h2>
+            <p class="text-center text-muted mb-5 lead">Based on your symptoms, here's what our AI system has found.</p>
+
+            <div class="result-container">
+                <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#diseaseModal">
+                    <i class="fas fa-disease"></i> Condition
+                </button>
+                <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#descriptionModal">
+                    <i class="fas fa-file-alt"></i> Description
+                </button>
+                <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#precautionModal">
+                    <i class="fas fa-shield-alt"></i> Precautions
+                </button>
+                <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#medicationsModal">
+                    <i class="fas fa-pills"></i> Medications
+                </button>
+                <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#workoutsModal">
+                    <i class="fas fa-running"></i> Exercises
+                </button>
+                <button class="toggle-button" data-bs-toggle="modal" data-bs-target="#dietsModal">
+                    <i class="fas fa-utensils"></i> Diet
+                </button>
+            </div>
+
+            <div class="alert alert-info mt-5 text-center">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Important:</strong> This is not a substitute for professional medical advice.
+                Please consult a healthcare provider for proper diagnosis and treatment.
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="modal fade" id="diseaseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-disease me-2"></i>Predicted Health Condition</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-primary p-4">
+                        <h4 class="alert-heading">{{ predicted_disease }}</h4>
+                        <hr>
+                        <p class="mb-0">This is the most likely condition based on your reported symptoms.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="descriptionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-file-alt me-2"></i>Condition Description</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-4 bg-light rounded">
+                        <h4 class="mb-3">{{ predicted_disease }}</h4>
+                        <p>{{ dis_des }}</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="precautionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-shield-alt me-2"></i>Recommended Precautions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        {% for i in my_precautions %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-3"></i>
+                                <span>{{ i }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="medicationsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-pills me-2"></i>Possible Medications</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning p-3 mb-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Always consult with a doctor before taking any medication.
+                    </div>
+                    <ul class="list-group">
+                        {% for i in medications %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <i class="fas fa-capsules text-primary me-3"></i>
+                                <span>{{ i }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="workoutsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-running me-2"></i>Recommended Exercises</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        {% for i in workout %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <i class="fas fa-heartbeat text-danger me-3"></i>
+                                <span>{{ i }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dietsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-utensils me-2"></i>Recommended Diet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        {% for i in my_diet %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <i class="fas fa-apple-alt text-success me-3"></i>
+                                <span>{{ i }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <h5 class="mb-3">HealthCheck</h5>
+                    <p>AI-powered health diagnosis system to help you understand potential health conditions based on your symptoms.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="footer-links mb-3">
+                        <a href="/about">About</a>
+                        <a href="/contact">Contact</a>
+                        <a href="/privacy">Privacy</a>
+                        <a href="/terms">Terms</a>
+                    </div>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4 bg-light">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 HealthCheck. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startSpeechRecognitionButton = document.getElementById('startSpeechRecognition');
+            const transcriptionDiv = document.getElementById('transcription');
+            const symptomsInput = document.getElementById('symptoms');
+
+            startSpeechRecognitionButton.addEventListener('click', startSpeechRecognition);
+
+            function startSpeechRecognition() {
+                if (!('webkitSpeechRecognition' in window)) {
+                    transcriptionDiv.innerHTML = '<div class="alert alert-warning">Speech recognition not supported in your browser.</div>';
+                    return;
+                }
+
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+
+                recognition.onstart = function() {
+                    startSpeechRecognitionButton.innerHTML = '<i class="fas fa-microphone-slash me-2"></i> Listening...';
+                    startSpeechRecognitionButton.classList.remove('btn-primary');
+                    startSpeechRecognitionButton.classList.add('btn-warning');
+                    transcriptionDiv.innerHTML = '<div class="text-info"><i class="fas fa-circle-notch fa-spin me-2"></i>Listening for symptoms...</div>';
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    transcriptionDiv.innerHTML = `<div class="text-success"><i class="fas fa-check-circle me-2"></i>Recognized: <strong>${transcript}</strong></div>`;
+                    symptomsInput.value = transcript;
+                };
+
+                recognition.onerror = function(event) {
+                    transcriptionDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-times-circle me-2"></i>Error occurred: ${event.error}</div>`;
+                };
+
+                recognition.onend = function() {
+                    startSpeechRecognitionButton.innerHTML = '<i class="fas fa-microphone me-2"></i>Voice Input';
+                    startSpeechRecognitionButton.classList.remove('btn-warning');
+                    startSpeechRecognitionButton.classList.add('btn-primary');
+                };
+
+                recognition.start();
+            }
+
+            // Smooth scroll for anchor links (though not explicitly used for on-page navigation here, good practice)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Add animation to modals when they open
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('show.bs.modal', function() {
+                    this.querySelector('.modal-content').style.transform = 'translateY(-30px)'; /* Start higher */
+                    this.querySelector('.modal-content').style.opacity = '0';
+                    setTimeout(() => {
+                        this.querySelector('.modal-content').style.transform = 'translateY(0)';
+                        this.querySelector('.modal-content').style.opacity = '1';
+                        this.querySelector('.modal-content').style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)'; /* More pleasing easing */
+                    }, 50); /* Slight delay */
+                });
+                 modal.addEventListener('hide.bs.modal', function() {
+                    this.querySelector('.modal-content').style.transform = 'translateY(0)';
+                    this.querySelector('.modal-content').style.opacity = '1';
+                    this.querySelector('.modal-content').style.transition = 'all 0.3s ease-out';
+                });
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
